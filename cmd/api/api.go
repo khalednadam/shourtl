@@ -1,25 +1,24 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 )
 
 type APIServer struct {
-	addr string
-	db   *sql.DB
+	addr   string
+	router *http.ServeMux
 }
 
-func (s *APIServer) HandleFunc(param1 string, f func(w http.ResponseWriter, r *http.Request)) {
-	panic("unimplemented")
-}
-
-func NewAPIServer(addr string, db *sql.DB) *APIServer {
+func NewAPIServer(addr string) *APIServer {
 	return &APIServer{
-		addr: addr,
-		db:   db,
+		addr:   addr,
+		router: http.NewServeMux(),
 	}
+}
+
+func (s *APIServer) HandleFunc(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+	s.router.HandleFunc(pattern, handler)
 }
 
 func (s *APIServer) Run() error {

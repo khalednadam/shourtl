@@ -18,7 +18,7 @@ type ShorterRequest struct {
 }
 
 func main() {
-	router := api.NewAPIServer(":8080", nil)
+	router := api.NewAPIServer(":3000")
 
 	db, err := db.NewMySQLStorage(mysql.Config{
 		User:      config.Envs.DBUser,
@@ -51,6 +51,10 @@ func main() {
 		w.Write([]byte(requestData.Name))
 	})
 
+	err = router.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 func initStorage(db *sql.DB) {
 	err := db.Ping()

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"khalednadam/shourtl/cmd/api"
 	"khalednadam/shourtl/config"
 	"khalednadam/shourtl/db"
 	"log"
@@ -17,7 +18,7 @@ type ShorterRequest struct {
 }
 
 func main() {
-	router := http.NewServeMux()
+	router := api.NewAPIServer(":8080", nil)
 
 	db, err := db.NewMySQLStorage(mysql.Config{
 		User:      config.Envs.DBUser,
@@ -50,13 +51,6 @@ func main() {
 		w.Write([]byte(requestData.Name))
 	})
 
-	server := http.Server{
-		Addr:    ":3000",
-		Handler: router,
-	}
-
-	fmt.Println("Listenting on port", server.Addr)
-	server.ListenAndServe()
 }
 func initStorage(db *sql.DB) {
 	err := db.Ping()

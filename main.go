@@ -1,9 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	"khalednadam/shourtl/config"
+	"khalednadam/shourtl/db"
+	"log"
 	"net/http"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type ShorterRequest struct {
@@ -13,6 +19,18 @@ type ShorterRequest struct {
 func main() {
 	router := http.NewServeMux()
 
+	db, err := db.NewMySQLStorage(mysql.Config{
+		User:      config.Envs.DBUser,
+		Passwd:    config.Envs.DBPassword,
+		Addr:      config.Envs.DBAddress,
+		DBName:    config.Envs.DBName,
+		Net:       "tcp",
+		ParseTime: true,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	initStorage(db)
 	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello, world"))
 	})
@@ -39,4 +57,11 @@ func main() {
 
 	fmt.Println("Listenting on port", server.Addr)
 	server.ListenAndServe()
+}
+func initStorage(db *sql.DB) {
+	err := db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("DB: Successfully connected")
 }

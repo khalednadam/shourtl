@@ -7,6 +7,7 @@ import (
 	"khalednadam/shourtl/cmd/api"
 	"khalednadam/shourtl/config"
 	"khalednadam/shourtl/db"
+	"khalednadam/shourtl/service"
 	"log"
 	"net/http"
 
@@ -32,15 +33,13 @@ func main() {
 		log.Fatal(err)
 	}
 	initStorage(db)
-	router.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello, world"))
-	})
 
 	/*
 	   TODO: Complete
 	   - Generate a unique id for the URL
 	   - Store it in DB
 	*/
+
 	router.HandleFunc("POST /shorten", func(w http.ResponseWriter, r *http.Request) {
 		requestData := ShorterRequest{}
 		err := json.NewDecoder(r.Body).Decode(&requestData)
@@ -51,11 +50,14 @@ func main() {
 		w.Write([]byte(requestData.Name))
 	})
 
+	service.TestRoutes(router)
 	err = router.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
 }
+
+// Starts the DB connection
 func initStorage(db *sql.DB) {
 	err := db.Ping()
 	if err != nil {

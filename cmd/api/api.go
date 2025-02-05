@@ -22,11 +22,10 @@ func (s *APIServer) HandleFunc(pattern string, handler func(http.ResponseWriter,
 }
 
 func (s *APIServer) Run() error {
-	router := http.NewServeMux()
 	server := http.Server{
 		Addr:    s.addr,
-		Handler: router,
+		Handler: s.router,
 	}
-	fmt.Println("Listening on port", server.Addr)
+	fmt.Println("Listening on port", s.addr)
 	return server.ListenAndServe()
 }
